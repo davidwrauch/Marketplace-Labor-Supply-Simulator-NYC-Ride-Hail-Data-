@@ -69,7 +69,7 @@ There is no single optimal policy—tradeoffs exist between worker earnings and 
 
 ### Fulfillment by Scenario
 
-![Fulfillment](output/figures/fulfillment_by_scenario.png)
+![Fulfillment](fulfillment_by_scenario.png)
 
 **Insight:**  
 Targeted incentives outperform both baseline and uniform pay increases in maximizing fulfillment.
@@ -78,7 +78,7 @@ Targeted incentives outperform both baseline and uniform pay increases in maximi
 
 ### Robustness (Monte Carlo)
 
-![Monte Carlo](output/figures/monte_carlo_fulfillment.png)
+![Monte Carlo](monte_carlo_fulfillment.png)
 
 **Insight:**  
 Results are stable across a wide range of behavioral assumptions:
