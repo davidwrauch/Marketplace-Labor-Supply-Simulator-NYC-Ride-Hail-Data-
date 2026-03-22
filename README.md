@@ -57,7 +57,7 @@ The model evaluates five compensation strategies:
 
 ### Policy Frontier
 
-![Policy Frontier](output/figures/policy_frontier.png)
+![Policy Frontier](policy_frontier.png)
 
 **Insight:**  
 There is no single optimal policy—tradeoffs exist between worker earnings and platform margin.
