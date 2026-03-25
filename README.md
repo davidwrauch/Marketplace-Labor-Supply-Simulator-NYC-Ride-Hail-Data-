@@ -152,16 +152,16 @@ While exact values change under different assumptions, the overall shape of the 
 ## Example Outputs
 
 ### Policy frontier (earnings vs margin)
-![Policy Frontier](output/figures/policy_frontier.png)
+![Policy Frontier](policy_frontier.png)
 
 ### Fulfillment by scenario
-![Fulfillment](output/figures/fulfillment_by_scenario.png)
+![Fulfillment](fulfillment_by_scenario.png)
 
 ### Monte Carlo robustness
-![Monte Carlo](output/figures/monte_carlo_fulfillment.png)
+![Monte Carlo](monte_carlo_fulfillment.png)
 
 ### Sensitivity analysis (policy space)
-![Sensitivity](output/figures/pay_sensitivity_curve.png)
+![Sensitivity](pay_sensitivity_curve.png)
 
 ---
 
