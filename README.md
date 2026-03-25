@@ -1,131 +1,190 @@
-# Marketplace Labor Supply Simulator (NYC Ride-Hail Data)
+# 🚕 Marketplace Labor Supply Simulator (NYC Ride-Hailing)
 
 ## Overview
 
-How do compensation strategies affect marketplace outcomes?
+This project simulates how a ride-hailing platform balances three competing goals:
 
-This project simulates a ride-hail marketplace using real NYC trip demand data to evaluate how different pay and incentive structures impact:
+- fulfilling rider demand  
+- maintaining driver earnings  
+- preserving platform margin  
 
-- Order fulfillment
-- Worker earnings
-- Platform margin
+Using NYC taxi demand data, I built a simplified simulation of a two-sided marketplace where driver supply responds to expected hourly earnings.
 
-The model captures worker participation behavior and solves for supply-demand equilibrium under different policy scenarios.
+The goal isn’t to perfectly model Uber or Lyft — it’s to explore how different compensation strategies change system behavior.
 
 ---
 
-## Data
+## Why this matters
 
-- Source: NYC TLC High Volume For-Hire Vehicle (HVFHV) trip data  
-- Period: Feb–Apr 2025  
-- Aggregation: Hourly demand by time-of-day and day-of-week  
+Ride-hailing platforms constantly make tradeoffs:
+
+- Pay drivers more → better service, lower margins  
+- Pay less → higher margins, worse fulfillment  
+- Use surge/bonuses → target supply where it’s needed  
+
+Running real-world experiments is expensive and risky, so simulation provides a way to explore these tradeoffs safely.
 
 ---
 
 ## Approach
 
-### Demand
-Demand is derived directly from observed trip volume in NYC.
+### 1. Demand (observed)
 
-### Worker Supply
-Workers choose whether to participate based on expected hourly earnings:
-
-- Modeled using a logistic response function  
-- Higher expected earnings → higher participation probability  
-
-### Market Equilibrium
-For each hour:
-- Expected trips per worker are calculated  
-- Worker participation determines supply  
-- Fulfilled vs unfulfilled demand is computed  
+- Hourly demand comes from NYC taxi data  
+- Captures real temporal patterns (rush hour, weekends, etc.)
 
 ---
 
-## Scenarios
+### 2. Supply (modeled)
 
-The model evaluates five compensation strategies:
+Drivers decide whether to work based on expected hourly earnings:
 
-- **Baseline** — current pay structure  
-- **Higher Base Pay** — uniform pay increase  
-- **Peak Bonus** — incentives during high-demand hours  
-- **Surge Pricing** — dynamic pay tied to demand  
-- **Balanced Incentive** — combination of base + targeted incentives  
+- Earnings depend on:
+  - trips per hour  
+  - per-trip pay  
+  - bonuses  
+  - surge multipliers  
 
----
+Participation is modeled using a smooth logistic response:
 
-## Results
-
-### Policy Frontier
-
-![Policy Frontier](policy_frontier.png)
-
-**Insight:**  
-There is no single optimal policy—tradeoffs exist between worker earnings and platform margin.
-
-- Surge pricing maximizes earnings and margin  
-- Balanced incentives provide strong performance across both  
+- higher earnings → more drivers log on  
+- not all drivers respond equally  
 
 ---
 
-### Fulfillment by Scenario
+### 3. Market equilibrium
 
-![Fulfillment](fulfillment_by_scenario.png)
+Supply and demand interact:
 
-**Insight:**  
-Targeted incentives outperform both baseline and uniform pay increases in maximizing fulfillment.
+- more drivers → fewer trips per driver  
+- fewer drivers → higher earnings per driver  
 
----
-
-### Robustness (Monte Carlo)
-
-![Monte Carlo](monte_carlo_fulfillment.png)
-
-**Insight:**  
-Results are stable across a wide range of behavioral assumptions:
-
-- Balanced incentives consistently achieve the highest fulfillment  
-- Surge pricing consistently maximizes platform margin  
-- Uniform base pay increases are less efficient  
+The model iterates until it reaches a stable equilibrium.
 
 ---
 
-## Key Takeaways
+### 4. Policies tested
 
-- **Targeted incentives outperform blunt pay increases**  
-- **Surge pricing maximizes profitability but reduces fulfillment**  
-- **Balanced incentive structures deliver the best overall performance**  
-- **Results are robust to uncertainty in worker behavior**  
-
----
-
-## Technical Highlights
-
-- Built in R using `dplyr`, `ggplot2`, and `arrow`  
-- Equilibrium-based simulation model  
-- Logistic participation modeling  
-- Scenario analysis across multiple compensation strategies  
-- Monte Carlo simulation for robustness  
+- **Baseline**
+- **Higher Base Pay**
+- **Peak Bonus**
+- **Surge Pricing**
+- **Balanced Incentive**
+- **Subsidized Peak Surge** (platform absorbs cost instead of riders)
 
 ---
 
-## Why This Matters
+### 5. Monte Carlo simulation
 
-Marketplace design decisions—especially around compensation—directly impact:
+To test robustness, the model is re-run under different assumptions:
 
-- Service reliability  
-- Worker welfare  
-- Platform profitability  
+- participation sensitivity  
+- demand variation  
+- behavioral noise  
 
-This project demonstrates how data and modeling can be used to evaluate those tradeoffs in a structured, quantitative way.
+This produces distributions (P10–P90), not just single estimates.
 
 ---
 
-## How to Run
+### 6. Sensitivity analysis (key extension)
 
-1. Download TLC trip data (HVFHV parquet files)
-2. Run:
+Instead of testing a few fixed policies, I ran a grid over:
 
-```r
-scripts/01_build_hourly_demand.R
-scripts/03_run_main_scenarios.R
-scripts/05_run_monte_carlo.R
+- worker pay per trip  
+- peak bonuses  
+- surge multipliers  
+- rider surcharges  
+
+This reveals how outcomes change across the full policy space, not just a handful of scenarios.
+
+---
+
+## Key Findings
+
+### 1. Driver supply responds non-linearly to pay
+
+Increasing driver pay improves fulfillment, but only up to a point. Beyond that, additional compensation produces diminishing returns.
+
+This suggests there is an interior “sweet spot” in compensation rather than a simple linear relationship.
+
+---
+
+### 2. Targeted incentives outperform blanket wage increases
+
+Policies that concentrate incentives during peak periods (bonuses or surge) are more efficient than uniformly increasing base pay.
+
+Higher base pay improves earnings but comes with a significant margin cost and relatively modest gains in fulfillment.
+
+---
+
+### 3. Surge pricing is powerful but volatile
+
+Surge pricing generates the highest platform margins, but introduces variability in fulfillment depending on behavioral assumptions.
+
+It performs well in deterministic scenarios but is less stable under uncertainty.
+
+---
+
+### 4. Balanced strategies deliver the most consistent outcomes
+
+A mix of moderate base pay, targeted bonuses, and limited surge tends to produce strong fulfillment while maintaining reasonable margins.
+
+This approach also performs well under Monte Carlo variation.
+
+---
+
+### 5. Rider price increases have limited impact in this model
+
+Introducing rider surcharges has a relatively small effect on fulfillment compared to supply-side incentives.
+
+This suggests improving driver participation is more impactful than suppressing demand under these assumptions.
+
+---
+
+### 6. Results depend on behavioral assumptions
+
+Outcomes depend on how strongly drivers respond to earnings (participation sensitivity).
+
+While exact values change under different assumptions, the overall shape of the tradeoffs remains consistent.
+
+---
+
+## Example Outputs
+
+### Policy frontier (earnings vs margin)
+![Policy Frontier](output/figures/policy_frontier.png)
+
+### Fulfillment by scenario
+![Fulfillment](output/figures/fulfillment_by_scenario.png)
+
+### Monte Carlo robustness
+![Monte Carlo](output/figures/monte_carlo_fulfillment.png)
+
+### Sensitivity analysis (policy space)
+![Sensitivity](output/figures/pay_sensitivity_curve.png)
+
+---
+
+## Limitations
+
+This is a simplified model:
+
+- unmet demand is inferred, not observed  
+- no spatial modeling (all NYC treated as one market)  
+- no long-term driver behavior or learning  
+- demand elasticity is stylized  
+
+Results should be interpreted as directional insights, not precise forecasts.
+
+---
+
+## Tech stack
+
+- R (dplyr, ggplot2)
+- simulation modeling
+- Monte Carlo analysis
+- scenario-based policy evaluation
+
+---
+
+## Repo structure
